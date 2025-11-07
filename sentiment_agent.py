@@ -1,7 +1,7 @@
 import requests
 from transformers import pipeline
 import os
-from datetime import datetime, timedelta
+from datetime import datetime   
 from dotenv import load_dotenv 
 
 load_dotenv()
@@ -12,16 +12,19 @@ sentiment_model = pipeline("sentiment-analysis")
 
 
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
-FINNHUB_NEWS_URL = "https://finnhub.io/api/v1/company-news"
+FINNHUB_NEWS_URL = "https://finnhub.io/api/v1/news"
 
 def fetch_company_news(symbol):
     """Fetch recent company news from Finnhub for past 3 days."""
-    end_date = datetime.now().date()
-    start_date = end_date - timedelta(days=3)
+    today = datetime.date.today()
+    from_date = today - datetime.timedelta(days=7).isoformat()
+    to_date = today.isoformat()
+
+    print (f"Fetching news from {from_date} to {to_date}")
+
+
     params = {
-        "symbol": symbol,
-        "from": start_date.isoformat(),
-        "to": end_date.isoformat(),
+        "category": "general",
         "token": FINNHUB_API_KEY
     }
     response = requests.get(FINNHUB_NEWS_URL, params=params)
