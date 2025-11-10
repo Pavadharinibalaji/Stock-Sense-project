@@ -1,5 +1,4 @@
 # finnhub_client.py
-<<<<<<< HEAD
 
 import os
 import finnhub
@@ -9,19 +8,17 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 # 🔹 Load API key
-=======
 import os
 import finnhub
 import pandas as pd
 from dotenv import load_dotenv
 
 # Load API key from .env file
->>>>>>> d03f45fdf4d60623d1875dfb441f39a4198e0c88
 load_dotenv()
 API_KEY = os.getenv("FINNHUB_API_KEY")
 
 if not API_KEY:
-<<<<<<< HEAD
+
     print("⚠️  FINNHUB_API_KEY not found in .env — Finnhub will be skipped for data fetching.")
 
 # 🔹 Initialize Finnhub client
@@ -117,7 +114,7 @@ if __name__ == "__main__":
     for sym in symbols:
         df = fetch_stock_data(sym)
         print(df.head())
-=======
+
     raise ValueError("❌ FINNHUB_API_KEY not found in .env file. Please add it to your .env file.")
 
 # Initialize Finnhub client
@@ -182,4 +179,3 @@ if __name__ == "__main__":
 
     print("\n🔹 Testing general news fetch:")
     print(fetch_general_news())
->>>>>>> d03f45fdf4d60623d1875dfb441f39a4198e0c88
