@@ -1,7 +1,7 @@
 import requests
 from transformers import pipeline
 import os
-from datetime import datetime   
+from datetime import date, timedelta   
 from dotenv import load_dotenv 
 
 load_dotenv()
@@ -16,8 +16,8 @@ FINNHUB_NEWS_URL = "https://finnhub.io/api/v1/news"
 
 def fetch_company_news(symbol):
     """Fetch recent company news from Finnhub for past 3 days."""
-    today = datetime.date.today()
-    from_date = today - datetime.timedelta(days=7).isoformat()
+    today = date.today()
+    from_date = (today - timedelta(days=7)).isoformat()
     to_date = today.isoformat()
 
     print (f"Fetching news from {from_date} to {to_date}")
