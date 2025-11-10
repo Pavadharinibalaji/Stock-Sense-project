@@ -9,6 +9,9 @@ def prepare_lstm_data(df, time_steps=60):
         raise ValueError("DataFrame must contain a 'close' column")
 
     data = df['close'].values.reshape(-1, 1)
+    print(f"Data length before scaling: {len(data)}")
+    if len(data) < time_steps:
+        raise ValueError("Not enough data ({len(data)}) to create sequences with {time_steps} time_steps.")
     scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_data = scaler.fit_transform(data)
 
@@ -22,7 +25,7 @@ def prepare_lstm_data(df, time_steps=60):
     return X, y, scaler
 
 
-def get_prepared_data(symbol, time_steps=60):
+def get_prepared_data(symbol, time_steps=20):
     """Fetch and prepare data for a given stock symbol"""
     df = fetch_stock_data(symbol)
     X, y, scaler = prepare_lstm_data(df, time_steps)
