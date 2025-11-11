@@ -8,7 +8,7 @@ from train import train_model
 from db import get_connection
 
 # 🔁 List of stocks to retrain weekly (expand as you wish)
-STOCK_LIST = ["AAPL", "MSFT", "GOOG", "TSLA", "AMZN", "META", "NFLX", "INFY", "TCS"]
+STOCK_LIST = ["AAPL", "MSFT", "GOOGL", "TSLA", "AMZN", "META", "NFLX", "INFY", "TCS"]
 
 def retrain_model(symbol: str):
     """Retrain or fine-tune the model using latest data for a single stock."""

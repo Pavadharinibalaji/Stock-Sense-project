@@ -1,10 +1,6 @@
 # predict.py
 import os
-<<<<<<< HEAD
 import joblib
-=======
-import pickle
->>>>>>> d03f45fdf4d60623d1875dfb441f39a4198e0c88
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -17,11 +13,9 @@ def load_scaler(symbol):
     if not os.path.exists(scaler_path):
         raise FileNotFoundError(f"Scaler not found for {symbol}. Train first using train.py.")
     with open(scaler_path, "rb") as f:
-<<<<<<< HEAD
         return joblib.load(scaler_path)
-=======
-        return pickle.load(f)
->>>>>>> d03f45fdf4d60623d1875dfb441f39a4198e0c88
+
+
 
 def predict_future(symbol, time_steps=60):
     """Load model+scaler for `symbol`, fetch recent data, and predict next close."""
@@ -56,7 +50,7 @@ def predict_future(symbol, time_steps=60):
 # ---------- Main multi-stock prediction ----------
 if __name__ == "__main__":
     # Define all your tracked stocks here
-    symbols = ["AAPL", "MSFT", "GOOGL", "TSLA", "AMZN"]
+    symbols = ["AAPL", "MSFT", "GOOGL", "TSLA", "AMZN", "INFY", "META", "NFLX"]
 
     results = []
     for sym in symbols:
@@ -71,8 +65,7 @@ if __name__ == "__main__":
         df_results.to_csv(output_path, index=False)
         print(f"\n✅ Predictions saved to {output_path}")
     else:
-<<<<<<< HEAD
+
         print("\n⚠️ No predictions were generated. Please ensure models exist for each symbol.")
-=======
+
         print("\n⚠️ No predictions were generated. Please ensure models exist for each symbol.")
->>>>>>> d03f45fdf4d60623d1875dfb441f39a4198e0c88

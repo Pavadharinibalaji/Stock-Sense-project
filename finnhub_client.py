@@ -1,5 +1,3 @@
-# finnhub_client.py
-
 import os
 import finnhub
 import pandas as pd
@@ -8,28 +6,20 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 # 🔹 Load API key
-import os
-import finnhub
-import pandas as pd
-from dotenv import load_dotenv
-
-# Load API key from .env file
 load_dotenv()
 API_KEY = os.getenv("FINNHUB_API_KEY")
 
 if not API_KEY:
-
-    print("⚠️  FINNHUB_API_KEY not found in .env — Finnhub will be skipped for data fetching.")
+    print("⚠️ FINNHUB_API_KEY not found in .env — Finnhub will be skipped for data fetching.")
 
 # 🔹 Initialize Finnhub client
 finnhub_client = finnhub.Client(api_key=API_KEY) if API_KEY else None
 
-
 # ===========================================
-#  FETCH FROM FINNHUB
+#  FETCH FROM FINNHUB (candles)
 # ===========================================
 def fetch_from_finnhub(symbol, days_back=365):
-    """Try fetching historical data from Finnhub (if API allows)."""
+    """Try fetching historical data from Finnhub (candles)."""
     try:
         if not finnhub_client:
             return None
@@ -43,7 +33,8 @@ def fetch_from_finnhub(symbol, days_back=365):
             return None
 
         df = pd.DataFrame(res)
-        df.rename(columns={'c': 'close', 'o': 'open', 'h': 'high', 'l': 'low', 'v': 'volume', 't': 'timestamp'}, inplace=True)
+        df.rename(columns={'c': 'close', 'o': 'open', 'h': 'high',
+                           'l': 'low', 'v': 'volume', 't': 'timestamp'}, inplace=True)
         df['date'] = pd.to_datetime(df['timestamp'], unit='s')
         df = df.sort_values('date')
 
@@ -56,12 +47,11 @@ def fetch_from_finnhub(symbol, days_back=365):
         print(f"❌ Finnhub error for {symbol}: {e}")
         return None
 
-
 # ===========================================
-#  FETCH FROM YFINANCE
+#  FETCH FROM YFINANCE (fallback)
 # ===========================================
 def fetch_from_yfinance(symbol, period="1y"):
-    """Fallback: Fetch data from Yahoo Finance (always available)."""
+    """Fallback: Fetch data from Yahoo Finance."""
     try:
         df = yf.download(symbol, period=period, interval="1d", progress=False)
         if df.empty:
@@ -78,15 +68,11 @@ def fetch_from_yfinance(symbol, period="1y"):
         print(f"❌ YFinance error for {symbol}: {e}")
         return None
 
-
 # ===========================================
 #  HYBRID FETCH FUNCTION
 # ===========================================
 def fetch_stock_data(symbol, days_back=365):
-    """
-    Fetch stock data — try Finnhub first, then fallback to Yahoo Finance.
-    Ensures consistent DataFrame for LSTM model.
-    """
+    """Fetch stock data — try Finnhub first, then fallback to Yahoo Finance."""
     print(f"\n📊 Fetching stock data for {symbol}...")
 
     # 1️⃣ Try Finnhub
@@ -105,56 +91,15 @@ def fetch_stock_data(symbol, days_back=365):
     print(f"❌ Could not fetch data for {symbol} from either source.")
     return pd.DataFrame()
 
-
 # ===========================================
-#  TEST
+#  GENERAL NEWS FETCH
 # ===========================================
-if __name__ == "__main__":
-    symbols = ["AAPL", "MSFT", "GOOG"]
-    for sym in symbols:
-        df = fetch_stock_data(sym)
-        print(df.head())
-
-    raise ValueError("❌ FINNHUB_API_KEY not found in .env file. Please add it to your .env file.")
-
-# Initialize Finnhub client
-finnhub_client = finnhub.Client(api_key=API_KEY)
-
-def fetch_stock_data(symbol):
-    """
-    Fetch latest stock candle data for the given stock symbol.
-    Returns a DataFrame with 'date', 'open', 'high', 'low', 'close', 'volume'.
-    """
+def fetch_general_news(category='general', count=20):
+    """Fetch general market news."""
     try:
-        res = finnhub_client.quote(symbol)
-        if not res or 'c' not in res:
-            print(f"❌ Error fetching stock data for {symbol}: Invalid response.")
+        if not finnhub_client:
             return pd.DataFrame()
 
-        data = {
-            'symbol': [symbol],
-            'current': [res['c']],
-            'high': [res['h']],
-            'low': [res['l']],
-            'open': [res['o']],
-            'previous_close': [res['pc']]
-        }
-
-        df = pd.DataFrame(data)
-        print(f"✅ Latest data fetched successfully for {symbol}")
-        return df
-
-    except Exception as e:
-        print(f"❌ Error fetching stock data for {symbol}: {e}")
-        return pd.DataFrame()
-
-
-def fetch_general_news(category='general', count=20):
-    """
-    Fetch general market news (not company-specific).
-    Default category: 'general', count: 20
-    """
-    try:
         news = finnhub_client.general_news(category, min_id=0)
         if not news:
             print("⚠️ No news found.")
@@ -171,11 +116,13 @@ def fetch_general_news(category='general', count=20):
         print(f"❌ Error fetching general news: {e}")
         return pd.DataFrame()
 
-
-# For testing
+# ===========================================
+#  TEST
+# ===========================================
 if __name__ == "__main__":
-    print("\n🔹 Testing stock data fetch:")
-    print(fetch_stock_data("AAPL"))
+    symbols = ["AAPL", "MSFT", "GOOG", "TSLA"]
+    for sym in symbols:
+        df = fetch_stock_data(sym)
+        print(df.head())
 
-    print("\n🔹 Testing general news fetch:")
     print(fetch_general_news())
