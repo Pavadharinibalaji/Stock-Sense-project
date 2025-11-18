@@ -11,3 +11,9 @@ python-dotenv
 sqlite3-binary
 joblib
 crewai
+pyrebase4
+streamlit_extras
+requests
+yfinance
+
+
