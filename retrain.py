@@ -4,7 +4,7 @@ from datetime import datetime
 from keras.models import load_model
 from finnhub_client import fetch_stock_data
 from prepare_data import prepare_lstm_data
-from train import train_model
+from train import train_model_for_symbol
 from db import get_connection
 
 # 🔁 List of stocks to retrain weekly (expand as you wish)
@@ -37,7 +37,7 @@ def retrain_model(symbol: str):
         model = load_model(model_path)
     else:
         print(f"🆕 No model found for {symbol}. Training from scratch...")
-        model = train_model(symbol, new_data)
+        model = train_model_for_symbol(symbol)
 
     # 5️⃣ Continue training with new data (fine-tuning)
     model.fit(X_train, y_train, epochs=5, batch_size=32, verbose=1)

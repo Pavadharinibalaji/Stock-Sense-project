@@ -10,3 +10,4 @@ textblob
 python-dotenv
 sqlite3-binary
 joblib
+crewai
