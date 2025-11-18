@@ -14,6 +14,10 @@ from sentiment_agent import get_general_sentiment
 from query_agent import run_query_agent
 
 
+# Prevent direct access
+if "logged_in" not in st.session_state or not st.session_state.logged_in:
+    st.warning("You must log in first!")
+    st.switch_page("app.py")
 
 
 
