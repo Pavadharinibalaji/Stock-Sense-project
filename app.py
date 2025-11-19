@@ -2,11 +2,8 @@ import streamlit as st
 import pyrebase
 import time
 from st_pages import hide_pages
-import os, json
-import firebase_admin
-from firebase_admin import credentials
+import os
 
-firebase_key = json.loads(os.getenv("FIREBASE_KEY"))
 
 # Load Finnhub key from Render environment variable
 finnhub_api = os.getenv("FINNHUB_API_KEY")

@@ -3,16 +3,17 @@ import finnhub
 import pandas as pd
 import yfinance as yf
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
 
-# 🔹 Load API key (Render will read this)
-API_KEY = os.environ.get("FINNHUB_API_KEY")
+# 🔹 Load API key
+load_dotenv()
+API_KEY = os.getenv("FINNHUB_API_KEY")
 
 if not API_KEY:
-    print("⚠️ FINNHUB_API_KEY not found — Finnhub disabled.")
+    print("⚠️ FINNHUB_API_KEY not found in .env — Finnhub will be skipped for data fetching.")
 
-# 🔹 Initialize Finnhub client only if key exists
+# 🔹 Initialize Finnhub client
 finnhub_client = finnhub.Client(api_key=API_KEY) if API_KEY else None
-
 
 # ===========================================
 #  FETCH FROM FINNHUB (candles)
