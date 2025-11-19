@@ -2,6 +2,19 @@ import streamlit as st
 import pyrebase
 import time
 from st_pages import hide_pages
+import firebase_admin
+from firebase_admin import credentials
+
+
+firebase_key = st.secrets["FIREBASE"]
+
+# Initialize Firebase
+cred = credentials.Certificate(firebase_key)
+firebase_admin.initialize_app(cred)
+
+st.write("Firebase initialized successfully!")
+
+
 
 # -----------------------------------------------------------
 # PAGE CONFIG
