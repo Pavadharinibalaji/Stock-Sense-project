@@ -3,13 +3,15 @@ import requests
 from transformers import pipeline
 import os
 from datetime import date, timedelta
-from dotenv import load_dotenv
 
 # -------------------- SETUP --------------------
-load_dotenv()
 
+# Load API Key directly from Render Environment Variables (NO .env file!)
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
 FINNHUB_NEWS_URL = "https://finnhub.io/api/v1/news"
+
+if not FINNHUB_API_KEY:
+    print("⚠️ WARNING: FINNHUB_API_KEY is missing in Render environment variables!")
 
 # Best financial sentiment model
 sentiment_model = pipeline(

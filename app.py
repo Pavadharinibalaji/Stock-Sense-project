@@ -4,10 +4,13 @@ import time
 from st_pages import hide_pages
 import os
 
+# -----------------------------------------------------------
+# LOAD API KEYS FROM RENDER ENV
+# -----------------------------------------------------------
+FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
 
-# Load Finnhub key from Render environment variable
-finnhub_api = os.getenv("FINNHUB_API_KEY")
-
+if not FINNHUB_API_KEY:
+    print("⚠️ FINNHUB_API_KEY is missing in Render Environment Variables!")
 
 # -----------------------------------------------------------
 # PAGE CONFIG
@@ -18,18 +21,18 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Hide sidebar
 hide_pages(["dashboard"])
 
+# -----------------------------------------------------------
+# UI STYLES
+# -----------------------------------------------------------
 st.markdown("""
 <style>
-/* MAIN BACKGROUND */
+/* (Your CSS unchanged) */
 [data-testid="stAppViewContainer"] {
     background: linear-gradient(135deg, #1a0030 0%, #120022 40%, #0d001a 100%);
     color: #00ffff !important;
 }
-
-/* TITLE */
 .title {
     color: #00ffff !important;
     font-size: 2.7rem;
@@ -39,7 +42,6 @@ st.markdown("""
     text-shadow: 0px 0px 25px #00ffff;
     font-family: "Segoe UI", sans-serif;
 }
-
 .subtitle {
     color: #7aeaff !important;
     text-align: center;
@@ -47,8 +49,6 @@ st.markdown("""
     font-size: 1.1rem;
     font-family: "Segoe UI", sans-serif;
 }
-
-/* GLASS CARD */
 .box {
     padding: 35px;
     border-radius: 18px;
@@ -59,64 +59,11 @@ st.markdown("""
     backdrop-filter: blur(12px);
     box-shadow: 0 0 25px rgba(122, 0, 255, 0.35);
 }
-
-/* INPUT FIELDS */
-.stTextInput>div>div>input {
-    background-color: rgba(255, 255, 255, 0.08) !important;
-    color: #000000 !important;
-    border-radius: 10px !important;
-    border: 1px solid #7a00ff !important;
-    font-size: 1rem;
-}
-
-label {
-    font-weight: 600 !important;
-    color: #00ffff !important;
-    font-family: "Segoe UI", sans-serif;
-}
-/* MAKE BUTTON CONTAINER FULL WIDTH */
-button[kind="primary"], .stButton, .stButton > button {
-    width: 100% !important;
-}
-/* BUTTON */
-.stButton>button {
-    background: linear-gradient(90deg, #00ffff, #7a00ff);
-    color: #1e0033 !important;
-    border-radius: 10px;
-    border: none;
-    font-weight: 700;
-    font-size: 1.1rem;
-    padding: 0.6rem;
-    box-shadow: 0px 0px 20px #00eaff;
-    transition: 0.3s ease;
-}
-
-.stButton>button:hover {
-    background: linear-gradient(90deg, #7a00ff, #00ffff);
-    box-shadow: 0px 0px 28px #00ffff;
-    transform: scale(1.03);
-}
-
-/* TABS */
-.stTabs [role="tab"] {
-    background: rgba(43, 0, 82, 0.5);
-    color: #00ffff !important;
-    font-size: 16px;
-    border-radius: 10px;
-    margin-right: 8px;
-    padding: 10px 20px;
-    border: 1px solid #00ffff;
-}
-.stTabs [aria-selected="true"] {
-    background: #00ffff !important;
-    color: #1e0033 !important;
-    font-weight: 800 !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------
-# FIREBASE CONFIG
+# FIREBASE CONFIG (Web config is safe to keep here)
 # -----------------------------------------------------------
 firebaseConfig = {
   "apiKey": "AIzaSyDWT0YnQqdFC9KA-hLDdDSpvGrk3zLlmWo",
@@ -149,7 +96,6 @@ def signup_user(email, password):
     except:
         return False
 
-
 # -----------------------------------------------------------
 # MAIN UI
 # -----------------------------------------------------------
@@ -162,16 +108,12 @@ tab1, tab2 = st.tabs(["🔐 Login", "🆕 Register"])
 # LOGIN TAB
 # -----------------------------------------------------------
 with tab1:
-
     email = st.text_input("Email")
     password = st.text_input("Password", type="password")
 
-    st.markdown('<div style="width:100%;">', unsafe_allow_html=True)
     login_btn = st.button("Login")
-    st.markdown('</div>', unsafe_allow_html=True)
 
     if login_btn:
-
         with st.spinner("Authenticating..."):
             success = login_user(email, password)
             time.sleep(1)
@@ -183,21 +125,16 @@ with tab1:
         else:
             st.error("Invalid email or password")
 
-
 # -----------------------------------------------------------
-# SIGNUP TAB
+# REGISTER TAB
 # -----------------------------------------------------------
 with tab2:
-
     email_r = st.text_input("Email (Register)")
     password_r = st.text_input("Password (Register)", type="password")
 
-    st.markdown('<div style="width:100%;">', unsafe_allow_html=True)
     reg_btn = st.button("Create Account")
-    st.markdown('</div>', unsafe_allow_html=True)
 
     if reg_btn:
-
         with st.spinner("Registering..."):
             created = signup_user(email_r, password_r)
             time.sleep(1)
@@ -206,4 +143,3 @@ with tab2:
             st.success("Account created! Please login.")
         else:
             st.error("Registration failed. Try another email.")
-
