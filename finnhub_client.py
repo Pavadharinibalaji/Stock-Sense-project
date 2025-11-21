@@ -5,15 +5,18 @@ import finnhub
 import pandas as pd
 import yfinance as yf
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
 
-# 🔹 Load Finnhub API key from Render environment variables
-API_KEY = os.getenv("FINNHUB_API_KEY")
+# Load environment variables from .env file
+load_dotenv()
+API_KEY=os.getenv("FINNHUB_API_KEY")
 
 if not API_KEY:
-    print("⚠️ FINNHUB_API_KEY not found in Render environment variables — Finnhub will be skipped.")
+    print("⚠️ FINNHUB_API_KEY not found in environment variables.")
 
-# 🔹 Initialize Finnhub client
+# Initialize Finnhub client
 finnhub_client = finnhub.Client(api_key=API_KEY) if API_KEY else None
+
 
 # ===========================================
 #  FETCH FROM FINNHUB (candles)

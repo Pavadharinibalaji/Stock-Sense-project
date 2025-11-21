@@ -5,18 +5,18 @@ from monitor import evaluate_model
 from retrain import retrain_model
 from langchain_huggingface import HuggingFaceEndpoint
 import os
+from dotenv import load_dotenv
 
-# Load HuggingFace API token from Render environment variables
-HF_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+# Load environment variables from .env file
+load_dotenv()
 
-if not HF_TOKEN:
-    print("⚠️ WARNING: HUGGINGFACEHUB_API_TOKEN is missing in Render environment variables!")
+os.environ["HUGGINGFACEHUB_API_TOKEN"] = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
 # LLM Setup (Mistral 7B)
 llm = HuggingFaceEndpoint(
     repo_id="mistralai/Mistral-7B-Instruct-v0.1",
     task="text-generation",
-    huggingfacehub_api_token=HF_TOKEN,
+    huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN"),
     temperature=0.7,
     max_new_tokens=200
 )

@@ -294,6 +294,7 @@ with tab1:
             )
 
             st.plotly_chart(fig_candle, use_container_width=True)
+
     # <<< CONTAINER END
 
 
@@ -448,6 +449,7 @@ with tab3:
                         legend=dict(x=0, y=1)
                     )
                     st.plotly_chart(fig, use_container_width=True)
+
             except Exception as e:
                 st.warning(f"Could not generate prediction chart: {e}")
     # <<< PERFORMANCE CONTAINER END

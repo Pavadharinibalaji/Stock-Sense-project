@@ -2,15 +2,8 @@ import streamlit as st
 import pyrebase
 import time
 from st_pages import hide_pages
-import os
-
-# -----------------------------------------------------------
-# LOAD API KEYS FROM RENDER ENV
-# -----------------------------------------------------------
-FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
-
-if not FINNHUB_API_KEY:
-    print("⚠️ FINNHUB_API_KEY is missing in Render Environment Variables!")
+import firebase_admin
+from firebase_admin import credentials, firestore
 
 # -----------------------------------------------------------
 # PAGE CONFIG
@@ -28,7 +21,6 @@ hide_pages(["dashboard"])
 # -----------------------------------------------------------
 st.markdown("""
 <style>
-/* (Your CSS unchanged) */
 [data-testid="stAppViewContainer"] {
     background: linear-gradient(135deg, #1a0030 0%, #120022 40%, #0d001a 100%);
     color: #00ffff !important;
@@ -63,37 +55,66 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------
-# FIREBASE CONFIG (Web config is safe to keep here)
+# FIREBASE CONFIG (CLIENT SDK)
 # -----------------------------------------------------------
 firebaseConfig = {
-  "apiKey": "AIzaSyDWT0YnQqdFC9KA-hLDdDSpvGrk3zLlmWo",
-  "authDomain": "stock-sense-project.firebaseapp.com",
-  "projectId": "stock-sense-project",
-  "storageBucket": "stock-sense-project.firebasestorage.app",
-  "messagingSenderId": "423833753864",
-  "appId": "1:423833753864:web:a32af956e161bac98574bd",
-  "measurementId": "G-YVW1MPQWLS",
-  "databaseURL": "https://stock-sense-project-default-rtdb.firebaseio.com/"
+    "apiKey": "AIzaSyDWT0YnQqdFC9KA-hLDdDSpvGrk3zLlmWo",
+    "authDomain": "stock-sense-project.firebaseapp.com",
+    "projectId": "stock-sense-project",
+    "storageBucket": "stock-sense-project.appspot.com",
+    "messagingSenderId": "423833753864",
+    "appId": "1:423833753864:web:a32af956e161bac98574bd",
+    "measurementId": "G-YVW1MPQWLS",
+    "databaseURL": ""
 }
 
 firebase = pyrebase.initialize_app(firebaseConfig)
 auth_fb = firebase.auth()
 
 # -----------------------------------------------------------
+# FIREBASE ADMIN (SERVER SDK)
+# -----------------------------------------------------------
+if not firebase_admin._apps:
+    cred = credentials.Certificate("serviceAccountKey.json")
+    firebase_admin.initialize_app(cred)
+
+db = firestore.client()
+
+# -----------------------------------------------------------
 # AUTH FUNCTIONS
 # -----------------------------------------------------------
 def login_user(email, password):
     try:
-        auth_fb.sign_in_with_email_and_password(email, password)
+        user = auth_fb.sign_in_with_email_and_password(email, password)
+        uid = user["localId"]
+
+        # Update last login
+        db.collection("users").document(uid).update({
+            "last_login": firestore.SERVER_TIMESTAMP
+        })
+
         return True
-    except:
+    except Exception as e:
+        print("Login Error:", e)
         return False
+
 
 def signup_user(email, password):
     try:
-        auth_fb.create_user_with_email_and_password(email, password)
+        user = auth_fb.create_user_with_email_and_password(email, password)
+        uid = user["localId"]
+
+        # Save Firestore profile
+        db.collection("users").document(uid).set({
+            "email": email,
+            "uid": uid,
+            "created_at": firestore.SERVER_TIMESTAMP,
+            "last_login": firestore.SERVER_TIMESTAMP
+        })
+
         return True
-    except:
+    except Exception as e:
+        print("Signup Error:", e)
         return False
 
 # -----------------------------------------------------------
@@ -111,9 +132,7 @@ with tab1:
     email = st.text_input("Email")
     password = st.text_input("Password", type="password")
 
-    login_btn = st.button("Login")
-
-    if login_btn:
+    if st.button("Login"):
         with st.spinner("Authenticating..."):
             success = login_user(email, password)
             time.sleep(1)
@@ -132,9 +151,7 @@ with tab2:
     email_r = st.text_input("Email (Register)")
     password_r = st.text_input("Password (Register)", type="password")
 
-    reg_btn = st.button("Create Account")
-
-    if reg_btn:
+    if st.button("Create Account"):
         with st.spinner("Registering..."):
             created = signup_user(email_r, password_r)
             time.sleep(1)
